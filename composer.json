@@ -29,5 +29,10 @@
     "suggest": {
         "symfony/symfony": "To use standalone Symfony Bundle tools",
         "behat/behat": "To use Behat tools"
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "0.x-dev"
+        }
     }
 }
