@@ -29,7 +29,7 @@ abstract class BundleConfigurationContext implements Context
      */
     public function __construct(Kernel $kernel)
     {
-        $this->kernel = $this->kernel;
+        $this->kernel = $kernel;
     }
 
     /**
