@@ -8,9 +8,11 @@
 
 namespace Webit\Tests\Behaviour\Bundle;
 
-use Symfony\Component\HttpKernel\HttpKernel;
+use Symfony\Component\Config\Loader\LoaderInterface;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\HttpKernel\Kernel as BaseKernel;
 
-abstract class Kernel extends HttpKernel
+abstract class Kernel extends BaseKernel
 {
     /**
      * @var string
