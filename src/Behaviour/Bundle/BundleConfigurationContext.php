@@ -103,4 +103,21 @@ abstract class BundleConfigurationContext implements Context
             $this->kernel->getContainer()->get($serviceName);
         }
     }
+    
+    /**
+     * @Then Doctrine ORM mapping for manager :emName should be valid
+     */
+    public function doctrineOrmMappingShouldBeValid($emName)
+    {
+        $container = $this->kernel->getContainer();
+        \PHPUnit_Framework_Assert::assertTrue($container->has('doctrine'), 'Doctrine ORM Registry not found.');
+
+        $manager = $container->get('doctrine')->getManager($emName);
+        $validator = new \Doctrine\ORM\Tools\SchemaValidator($manager);
+        $errors = $validator->validateMapping();
+        if (! empty($errors)) {
+            $errorsString = $this->stringifyMappingErrors($errors);
+            \PHPUnit_Framework_Assert::assertEmpty($errors, $errorsString);
+        }
+    }
 }
