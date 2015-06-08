@@ -120,4 +120,18 @@ abstract class BundleConfigurationContext implements Context
             \PHPUnit_Framework_Assert::assertEmpty($errors, $errorsString);
         }
     }
+    
+    /**
+     * @param array $errors
+     * @return string
+     */
+    private function stringifyMappingErrors(array $errors)
+    {
+        $string = array();
+        foreach ($errors as $type => $typeErrors) {
+            $string[] = $type . ":\n". implode("\n", $typeErrors);
+        }
+
+        return implode("\n", $string);
+    }
 }
