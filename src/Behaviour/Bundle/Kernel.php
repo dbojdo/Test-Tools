@@ -31,8 +31,8 @@ abstract class Kernel extends BaseKernel
 
     public function __construct($env = 'test', $debug = true)
     {
-        parent::__construct($env, $debug);
         $this->hash = substr(md5(mt_rand(0,10000).microtime(true). mt_rand(0, 100000)), -6);
+        parent::__construct($env, $debug);
     }
 
     /**
@@ -77,6 +77,14 @@ abstract class Kernel extends BaseKernel
     public function getLogDir()
     {
         return sys_get_temp_dir() . '/kernel/'.$this->hash.'/logs';
+    }
+
+    /**
+     * @return string
+     */
+    public function getName()
+    {
+        return parent::getName() . $this->hash;
     }
 
     /**
