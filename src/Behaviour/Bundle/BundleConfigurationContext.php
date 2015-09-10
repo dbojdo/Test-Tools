@@ -35,7 +35,7 @@ abstract class BundleConfigurationContext implements Context
      */
     public function __construct(Kernel $kernel)
     {
-        $this->kernel            = $kernel;
+        $this->kernel = $kernel;
         $this->containerDebugger = new ContainerDebugger();
     }
 
