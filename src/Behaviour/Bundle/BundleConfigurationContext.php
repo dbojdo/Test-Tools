@@ -11,6 +11,7 @@ namespace Webit\Tests\Behaviour\Bundle;
 use Behat\Behat\Context\Context;
 use Behat\Gherkin\Node\PyStringNode;
 use Behat\Gherkin\Node\TableNode;
+use Webit\Tests\Helper\ContainerDebugger;
 
 abstract class BundleConfigurationContext implements Context
 {
@@ -25,11 +26,17 @@ abstract class BundleConfigurationContext implements Context
     protected $services = array();
 
     /**
+     * @var ContainerDebugger
+     */
+    protected $containerDebugger;
+
+    /**
      * @param Kernel $kernel
      */
     public function __construct(Kernel $kernel)
     {
-        $this->kernel = $kernel;
+        $this->kernel            = $kernel;
+        $this->containerDebugger = new ContainerDebugger();
     }
 
     /**
@@ -56,11 +63,17 @@ abstract class BundleConfigurationContext implements Context
     public function thereShouldBeFollowingServicesDefined(PyStringNode $string)
     {
         $container = $this->kernel->getRawContainerBuilder();
-        foreach (explode(',',$string->getRaw()) as $serviceName) {
+        foreach (explode(',', $string->getRaw()) as $serviceName) {
             $serviceName = trim($serviceName);
-            if (empty($serviceName)) {continue;}
+            if (empty($serviceName)) {
+                continue;
+            }
 
-            \PHPUnit_Framework_Assert::assertTrue($container->hasDefinition($serviceName), sprintf('Service "%s" is not defined in the Service Container.', $serviceName));
+            \PHPUnit_Framework_Assert::assertTrue($container->hasDefinition($serviceName),
+                                                  sprintf('Service "%s" is not defined in the Service Container.',
+                                                          $serviceName
+                                                  )
+            );
             $this->services[] = $serviceName;
         }
     }
@@ -74,7 +87,8 @@ abstract class BundleConfigurationContext implements Context
         $container = $this->kernel->getRawContainerBuilder();
         foreach ($table as $row) {
             \PHPUnit_Framework_Assert::assertTrue($container->hasAlias($row['alias']),
-                sprintf('Alias "%s" doesn\'t exist', $row['alias']));
+                                                  sprintf('Alias "%s" doesn\'t exist', $row['alias'])
+            );
             \PHPUnit_Framework_Assert::assertEquals($row['service'], (string)$container->getAlias($row['alias']));
             $this->services[] = $row['alias'];
         }
@@ -87,10 +101,16 @@ abstract class BundleConfigurationContext implements Context
     public function thereShouldNotBeFollowingServicesDefined(PyStringNode $string)
     {
         $container = $this->kernel->getRawContainerBuilder();
-        foreach (explode(',',$string->getRaw()) as $serviceName) {
+        foreach (explode(',', $string->getRaw()) as $serviceName) {
             $serviceName = trim($serviceName);
-            if (empty($serviceName)) {continue;}
-            \PHPUnit_Framework_Assert::assertFalse($container->hasDefinition($serviceName), sprintf('Service "%s" is defined in the Service Container but it should not be.', $serviceName));
+            if (empty($serviceName)) {
+                continue;
+            }
+            \PHPUnit_Framework_Assert::assertFalse($container->hasDefinition($serviceName),
+                                                   sprintf('Service "%s" is defined in the Service Container but it should not be.',
+                                                           $serviceName
+                                                   )
+            );
         }
     }
 
@@ -103,7 +123,7 @@ abstract class BundleConfigurationContext implements Context
             $this->kernel->getContainer()->get($serviceName);
         }
     }
-    
+
     /**
      * @Then Doctrine ORM mapping for manager :emName should be valid
      */
@@ -112,15 +132,15 @@ abstract class BundleConfigurationContext implements Context
         $container = $this->kernel->getContainer();
         \PHPUnit_Framework_Assert::assertTrue($container->has('doctrine'), 'Doctrine ORM Registry not found.');
 
-        $manager = $container->get('doctrine')->getManager($emName);
+        $manager   = $container->get('doctrine')->getManager($emName);
         $validator = new \Doctrine\ORM\Tools\SchemaValidator($manager);
-        $errors = $validator->validateMapping();
-        if (! empty($errors)) {
+        $errors    = $validator->validateMapping();
+        if (!empty($errors)) {
             $errorsString = $this->stringifyMappingErrors($errors);
             \PHPUnit_Framework_Assert::assertEmpty($errors, $errorsString);
         }
     }
-    
+
     /**
      * @param array $errors
      * @return string
@@ -129,9 +149,35 @@ abstract class BundleConfigurationContext implements Context
     {
         $string = array();
         foreach ($errors as $type => $typeErrors) {
-            $string[] = $type . ":\n". implode("\n", $typeErrors);
+            $string[] = $type . ":\n" . implode("\n", $typeErrors);
         }
 
         return implode("\n", $string);
+    }
+
+    /**
+     * @Given The container is not broken
+     */
+    public function theContainerIsNotBroken()
+    {
+        $this->containerDebugger->debug(
+            $this->kernel->getContainer()
+        );
+    }
+
+    /**
+     * @Given services that contains :regex
+     */
+    public function servicesThatContains($regex)
+    {
+        $this->containerDebugger->includeServicePattern($regex);
+    }
+
+    /**
+     * @Given services that NOT contains :regex
+     */
+    public function serviceThatNOTContains($regex)
+    {
+        $this->containerDebugger->excludeServicePattern($regex);
     }
 }
