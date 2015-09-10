@@ -63,17 +63,21 @@ abstract class BundleConfigurationContext implements Context
     public function thereShouldBeFollowingServicesDefined(PyStringNode $string)
     {
         $container = $this->kernel->getRawContainerBuilder();
+
         foreach (explode(',', $string->getRaw()) as $serviceName) {
             $serviceName = trim($serviceName);
+
             if (empty($serviceName)) {
                 continue;
             }
 
-            \PHPUnit_Framework_Assert::assertTrue($container->hasDefinition($serviceName),
-                                                  sprintf('Service "%s" is not defined in the Service Container.',
-                                                          $serviceName
-                                                  )
+            \PHPUnit_Framework_Assert::assertTrue(
+                $container->hasDefinition($serviceName),
+                sprintf('Service "%s" is not defined in the Service Container.',
+                        $serviceName
+                )
             );
+
             $this->services[] = $serviceName;
         }
     }
@@ -85,10 +89,13 @@ abstract class BundleConfigurationContext implements Context
     public function thereShouldBeFollowingAliasesDefined(TableNode $table)
     {
         $container = $this->kernel->getRawContainerBuilder();
+
         foreach ($table as $row) {
-            \PHPUnit_Framework_Assert::assertTrue($container->hasAlias($row['alias']),
-                                                  sprintf('Alias "%s" doesn\'t exist', $row['alias'])
+            \PHPUnit_Framework_Assert::assertTrue(
+                $container->hasAlias($row['alias']),
+                sprintf('Alias "%s" doesn\'t exist', $row['alias'])
             );
+
             \PHPUnit_Framework_Assert::assertEquals($row['service'], (string)$container->getAlias($row['alias']));
             $this->services[] = $row['alias'];
         }
@@ -101,15 +108,17 @@ abstract class BundleConfigurationContext implements Context
     public function thereShouldNotBeFollowingServicesDefined(PyStringNode $string)
     {
         $container = $this->kernel->getRawContainerBuilder();
+
         foreach (explode(',', $string->getRaw()) as $serviceName) {
             $serviceName = trim($serviceName);
+
             if (empty($serviceName)) {
                 continue;
             }
-            \PHPUnit_Framework_Assert::assertFalse($container->hasDefinition($serviceName),
-                                                   sprintf('Service "%s" is defined in the Service Container but it should not be.',
-                                                           $serviceName
-                                                   )
+
+            \PHPUnit_Framework_Assert::assertFalse(
+                $container->hasDefinition($serviceName),
+                sprintf('Service "%s" is defined in the Service Container but it should not be.', $serviceName)
             );
         }
     }
@@ -135,6 +144,7 @@ abstract class BundleConfigurationContext implements Context
         $manager   = $container->get('doctrine')->getManager($emName);
         $validator = new \Doctrine\ORM\Tools\SchemaValidator($manager);
         $errors    = $validator->validateMapping();
+
         if (!empty($errors)) {
             $errorsString = $this->stringifyMappingErrors($errors);
             \PHPUnit_Framework_Assert::assertEmpty($errors, $errorsString);
