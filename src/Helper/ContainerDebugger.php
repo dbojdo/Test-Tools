@@ -26,9 +26,6 @@ class ContainerDebugger
     /** @var ConsolePrinter  */
     private $console;
 
-    /**
-     * @param Container $container
-     */
     public function __construct()
     {
         $this->console = new ConsolePrinter();
@@ -120,7 +117,6 @@ class ContainerDebugger
      */
     private function findInFiles($basePath, $string)
     {
-
         $format = 'find %s -type f | xargs grep "%s" --color -n';
         $cmd    = sprintf($format, $basePath, $string);
 
@@ -128,8 +124,6 @@ class ContainerDebugger
 
         echo $output;
     }
-
-
 
     private function printOk()
     {

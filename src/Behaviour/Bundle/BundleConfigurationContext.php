@@ -11,6 +11,7 @@ namespace Webit\Tests\Behaviour\Bundle;
 use Behat\Behat\Context\Context;
 use Behat\Gherkin\Node\PyStringNode;
 use Behat\Gherkin\Node\TableNode;
+use PHPUnit\Framework\Assert;
 use Webit\Tests\Helper\ContainerDebugger;
 
 abstract class BundleConfigurationContext implements Context
@@ -71,7 +72,7 @@ abstract class BundleConfigurationContext implements Context
                 continue;
             }
 
-            \PHPUnit_Framework_Assert::assertTrue(
+            Assert::assertTrue(
                 $container->hasDefinition($serviceName),
                 sprintf('Service "%s" is not defined in the Service Container.',
                         $serviceName
@@ -91,12 +92,12 @@ abstract class BundleConfigurationContext implements Context
         $container = $this->kernel->getRawContainerBuilder();
 
         foreach ($table as $row) {
-            \PHPUnit_Framework_Assert::assertTrue(
+            Assert::assertTrue(
                 $container->hasAlias($row['alias']),
                 sprintf('Alias "%s" doesn\'t exist', $row['alias'])
             );
 
-            \PHPUnit_Framework_Assert::assertEquals($row['service'], (string)$container->getAlias($row['alias']));
+            Assert::assertEquals($row['service'], (string)$container->getAlias($row['alias']));
             $this->services[] = $row['alias'];
         }
     }
@@ -116,7 +117,7 @@ abstract class BundleConfigurationContext implements Context
                 continue;
             }
 
-            \PHPUnit_Framework_Assert::assertFalse(
+            Assert::assertFalse(
                 $container->hasDefinition($serviceName),
                 sprintf('Service "%s" is defined in the Service Container but it should not be.', $serviceName)
             );
@@ -139,15 +140,15 @@ abstract class BundleConfigurationContext implements Context
     public function doctrineOrmMappingShouldBeValid($emName)
     {
         $container = $this->kernel->getContainer();
-        \PHPUnit_Framework_Assert::assertTrue($container->has('doctrine'), 'Doctrine ORM Registry not found.');
+        Assert::assertTrue($container->has('doctrine'), 'Doctrine ORM Registry not found.');
 
-        $manager   = $container->get('doctrine')->getManager($emName);
+        $manager = $container->get('doctrine')->getManager($emName);
         $validator = new \Doctrine\ORM\Tools\SchemaValidator($manager);
-        $errors    = $validator->validateMapping();
+        $errors = $validator->validateMapping();
 
         if (!empty($errors)) {
             $errorsString = $this->stringifyMappingErrors($errors);
-            \PHPUnit_Framework_Assert::assertEmpty($errors, $errorsString);
+            Assert::assertEmpty($errors, $errorsString);
         }
     }
 
