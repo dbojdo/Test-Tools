@@ -12,6 +12,7 @@ use Behat\Behat\Context\Context;
 use Behat\Gherkin\Node\PyStringNode;
 use Behat\Gherkin\Node\TableNode;
 use PHPUnit\Framework\Assert;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Webit\Tests\Helper\ContainerDebugger;
 
 abstract class BundleConfigurationContext implements Context
@@ -55,6 +56,11 @@ abstract class BundleConfigurationContext implements Context
     public function iBootstrapTheApplication()
     {
         $this->kernel->boot();
+        $this->onKernelBoot($this->kernel, $this->kernel->getContainer());
+    }
+
+    protected function onKernelBoot(Kernel $kernel, ContainerInterface $container)
+    {
     }
 
     /**
