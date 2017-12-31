@@ -11,6 +11,7 @@ namespace Webit\Tests\Behaviour\Bundle;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Kernel as BaseKernel;
+use Symfony\Component\Yaml\Yaml;
 
 abstract class Kernel extends BaseKernel
 {
@@ -31,7 +32,7 @@ abstract class Kernel extends BaseKernel
 
     public function __construct($env = 'test', $debug = true)
     {
-        $this->hash = substr(md5(mt_rand(0,10000).microtime(true). mt_rand(0, 100000)), -6);
+        $this->hash = $this->generateHash();
         parent::__construct($env, $debug);
     }
 
@@ -43,28 +44,15 @@ abstract class Kernel extends BaseKernel
     }
 
     /**
-     * Loads the container configuration.
-     *
-     * @param LoaderInterface $loader A LoaderInterface instance
-     *
-     * @api
+     * @inheritdoc
      */
     public function registerContainerConfiguration(LoaderInterface $loader)
     {
-        $config = $this->getRootDir(). '/config.yml';
-        if (is_file($config)) {
-            $loader->load($config);
-        }
-
-        foreach ($this->configs as $i => $config) {
-            $file = $this->getCacheDir() .'/config'.$i.'.yml';
-            file_put_contents($file, $config);
-            $loader->load($file);
-        }
+        $loader->load($this->dumpConfig());
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
     public function getCacheDir()
     {
@@ -72,7 +60,7 @@ abstract class Kernel extends BaseKernel
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
     public function getLogDir()
     {
@@ -80,7 +68,7 @@ abstract class Kernel extends BaseKernel
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
     public function getName()
     {
@@ -88,7 +76,7 @@ abstract class Kernel extends BaseKernel
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
     protected function getContainerClass()
     {
@@ -107,5 +95,39 @@ abstract class Kernel extends BaseKernel
         }
 
         return $this->containerBuilder;
+    }
+
+    public function dumpConfig(): string
+    {
+        $configsDir = $this->getCacheDir().'/configs_'.$this->generateHash();
+
+        @mkdir($configsDir, 0755, true);
+
+        $configs = $this->configs;
+        $rootConfig = $this->getRootDir(). '/config.yml';
+        if (is_file($rootConfig)) {
+            array_unshift($configs, file_get_contents($rootConfig));
+        }
+
+        $resources = [];
+        foreach ($configs as $i => $config) {
+            $file = $configsDir .'/config'.$i.'.yml';
+            file_put_contents($file, $config);
+            $resources[] = ['resource' => $file];
+        }
+
+        file_put_contents(
+            $filename = $this->getCacheDir().'/main.config.yml',
+            Yaml::dump([
+                'imports' => $resources
+            ])
+        );
+
+        return $filename;
+    }
+
+    private function generateHash()
+    {
+        return substr(md5(mt_rand(0,10000).microtime(true). mt_rand(0, 100000)), -6);
     }
 }
