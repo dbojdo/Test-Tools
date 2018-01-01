@@ -32,6 +32,9 @@ abstract class BundleConfigurationContext implements Context
      */
     protected $containerDebugger;
 
+    /** @var bool */
+    private $isBootstrapped = false;
+
     /**
      * @param Kernel $kernel
      */
@@ -55,8 +58,17 @@ abstract class BundleConfigurationContext implements Context
      */
     public function iBootstrapTheApplication()
     {
+        if ($this->isBootstrapped) {
+            return;
+        }
+
         $this->kernel->boot();
+
         $this->onKernelBoot($this->kernel, $this->kernel->getContainer());
+        $this->isBootstrapped = true;
+
+        putenv("SF_KERNEL_CONFIG=". $this->kernel->getContainer()->getParameter('kernel.config'));
+        putenv("SF_KERNEL_HASH=". $this->kernel->getContainer()->getParameter('kernel.hash'));
     }
 
     protected function onKernelBoot(Kernel $kernel, ContainerInterface $container)
@@ -81,7 +93,7 @@ abstract class BundleConfigurationContext implements Context
             Assert::assertTrue(
                 $container->hasDefinition($serviceName),
                 sprintf('Service "%s" is not defined in the Service Container.',
-                        $serviceName
+                    $serviceName
                 )
             );
 

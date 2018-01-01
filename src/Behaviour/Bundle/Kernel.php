@@ -30,9 +30,9 @@ abstract class Kernel extends BaseKernel
      */
     private $configs = array();
 
-    public function __construct($env = 'test', $debug = true)
+    public function __construct($env = 'test', $debug = true, $kernelHash = null)
     {
-        $this->hash = $this->generateHash();
+        $this->hash = $kernelHash ?: $this->generateHash();
         parent::__construct($env, $debug);
     }
 
@@ -116,14 +116,25 @@ abstract class Kernel extends BaseKernel
             $resources[] = ['resource' => $file];
         }
 
+        $filename = sprintf('%s/main.config.%s.yml', $configsDir, $this->generateHash());
+
         file_put_contents(
-            $filename = $this->getCacheDir().'/main.config.yml',
+            $filename,
             Yaml::dump([
                 'imports' => $resources
             ])
         );
 
         return $filename;
+    }
+
+    protected function getKernelParameters()
+    {
+        $params = parent::getKernelParameters();
+        $params['kernel.config'] = $this->dumpConfig();
+        $params['kernel.hash'] = $this->hash;
+
+        return $params;
     }
 
     private function generateHash()
