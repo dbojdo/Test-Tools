@@ -38,9 +38,12 @@ abstract class Kernel extends BaseKernel
 
     /**
      * @param $yaml
+     * @return $this
      */
-    public function appendConfig($yaml) {
+    public function appendConfig($yaml)
+    {
         $this->configs[] = $yaml;
+        return $this;
     }
 
     /**
@@ -56,7 +59,7 @@ abstract class Kernel extends BaseKernel
      */
     public function getCacheDir()
     {
-        return sys_get_temp_dir() . '/kernel/'.$this->hash.'/cache';
+        return sprintf('%s/kernel/%s/cache', sys_get_temp_dir(), $this->hash);
     }
 
     /**
@@ -64,7 +67,7 @@ abstract class Kernel extends BaseKernel
      */
     public function getLogDir()
     {
-        return sys_get_temp_dir() . '/kernel/'.$this->hash.'/logs';
+        return sprintf('%s/kernel/%s/logs', sys_get_temp_dir(), $this->hash);
     }
 
     /**
@@ -89,7 +92,7 @@ abstract class Kernel extends BaseKernel
      */
     public function getRawContainerBuilder()
     {
-        if (! $this->containerBuilder) {
+        if (!$this->containerBuilder) {
             $this->containerBuilder = $this->buildContainer();
             $this->containerBuilder->compile();
         }
@@ -99,19 +102,19 @@ abstract class Kernel extends BaseKernel
 
     public function dumpConfig(): string
     {
-        $configsDir = $this->getCacheDir().'/configs_'.$this->generateHash();
+        $configsDir = $this->getCacheDir() . '/configs_' . $this->generateHash();
 
         @mkdir($configsDir, 0755, true);
 
         $configs = $this->configs;
-        $rootConfig = $this->getRootDir(). '/config.yml';
+        $rootConfig = $this->getRootDir() . '/config.yml';
         if (is_file($rootConfig)) {
             array_unshift($configs, file_get_contents($rootConfig));
         }
 
         $resources = [];
         foreach ($configs as $i => $config) {
-            $file = $configsDir .'/config'.$i.'.yml';
+            $file = $configsDir . '/config' . $i . '.yml';
             file_put_contents($file, $config);
             $resources[] = ['resource' => $file];
         }
@@ -139,6 +142,6 @@ abstract class Kernel extends BaseKernel
 
     private function generateHash()
     {
-        return substr(md5(mt_rand(0,10000).microtime(true). mt_rand(0, 100000)), -6);
+        return substr(md5(mt_rand(0, 10000) . microtime(true) . mt_rand(0, 100000)), -6);
     }
 }
