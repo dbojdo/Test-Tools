@@ -4,9 +4,9 @@ namespace Webit\Tests\Doctrine;
 
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\TestCase;
-use Webit\Tests\Bootstrap\AppKernel;
+use Webit\Tests\Bootstrap\AppConfigurableKernel;
 use Webit\Tests\Bootstrap\Entity\User;
-use Webit\Tests\Kernel\Kernel;
+use Webit\Tests\Kernel\ConfigurableKernel;
 
 class SchemaEnsureTraitIntegrationTest extends TestCase
 {
@@ -14,11 +14,11 @@ class SchemaEnsureTraitIntegrationTest extends TestCase
 
     /**
      * @param string|null $hash
-     * @return Kernel
+     * @return ConfigurableKernel
      */
     protected function createKernel($hash = null)
     {
-        return new AppKernel($hash);
+        return new AppConfigurableKernel($hash);
     }
 
     /**

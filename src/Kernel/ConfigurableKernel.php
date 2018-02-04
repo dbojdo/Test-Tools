@@ -4,10 +4,11 @@ namespace Webit\Tests\Kernel;
 
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\HttpKernel\Bundle\BundleInterface;
 use Symfony\Component\HttpKernel\Kernel as BaseKernel;
 use Symfony\Component\Yaml\Yaml;
 
-abstract class Kernel extends BaseKernel
+class ConfigurableKernel extends BaseKernel
 {
     /** @var string */
     private $hash;
@@ -17,6 +18,9 @@ abstract class Kernel extends BaseKernel
 
     /** @var array */
     private $configs = array();
+
+    /** @var BundleInterface[] */
+    private $configuredBundles;
 
     public function __construct($kernelHash = null, $env = 'test', $debug = true)
     {
@@ -32,6 +36,19 @@ abstract class Kernel extends BaseKernel
     {
         $this->configs[] = $yaml;
         return $this;
+    }
+
+    public function addBundle(BundleInterface $bundle)
+    {
+        $this->configuredBundles[] = $bundle;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function registerBundles()
+    {
+        return $this->configuredBundles;
     }
 
     /**

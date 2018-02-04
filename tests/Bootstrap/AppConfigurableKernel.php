@@ -4,9 +4,9 @@ namespace Webit\Tests\Bootstrap;
 
 use Doctrine\Bundle\DoctrineBundle\DoctrineBundle;
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
-use Webit\Tests\Kernel\Kernel;
+use Webit\Tests\Kernel\ConfigurableKernel;
 
-class AppKernel extends Kernel
+class AppConfigurableKernel extends ConfigurableKernel
 {
     /**
      * @inheritdoc

@@ -8,14 +8,14 @@ use Behat\Gherkin\Node\TableNode;
 use PHPUnit\Framework\Assert;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Webit\Tests\Helper\ContainerDebugger;
-use Webit\Tests\Kernel\Kernel;
+use Webit\Tests\Kernel\ConfigurableKernel;
 use Webit\Tests\Kernel\KernelAwareTrait;
 
 abstract class BundleConfigurationContext implements Context
 {
     use KernelAwareTrait;
 
-    /** @var Kernel */
+    /** @var ConfigurableKernel */
     protected $kernel;
 
     /** @var array */
@@ -27,7 +27,7 @@ abstract class BundleConfigurationContext implements Context
     /** @var bool */
     private $isBootstrapped = false;
 
-    public function __construct(Kernel $kernel = null)
+    public function __construct(ConfigurableKernel $kernel = null)
     {
         $this->kernel = $kernel ?: $this->createKernel();
         $this->containerDebugger = new ContainerDebugger();
@@ -60,7 +60,7 @@ abstract class BundleConfigurationContext implements Context
         putenv("SF_KERNEL_HASH=". $this->kernel->getContainer()->getParameter('kernel.hash'));
     }
 
-    protected function onKernelBoot(Kernel $kernel, ContainerInterface $container)
+    protected function onKernelBoot(ConfigurableKernel $kernel, ContainerInterface $container)
     {
     }
 

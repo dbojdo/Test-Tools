@@ -6,18 +6,18 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 
 trait KernelAwareTrait
 {
-    /** @var Kernel */
+    /** @var ConfigurableKernel */
     private $kernel;
 
     /**
      * @param string|null $hash
-     * @return Kernel
+     * @return ConfigurableKernel
      */
     abstract protected function createKernel($hash = null);
 
     /**
      * @param bool $boot
-     * @return Kernel
+     * @return ConfigurableKernel
      */
     protected function kernel($boot = true)
     {
