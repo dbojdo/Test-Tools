@@ -1,12 +1,6 @@
 <?php
-/**
- * File BundleConfigurationContext.php
- * Created at: 2015-05-17 09-22
- *
- * @author Daniel Bojdo <daniel.bojdo@web-it.eu>
- */
 
-namespace Webit\Tests\Behaviour\Bundle;
+namespace Webit\Tests\Bundle;
 
 use Behat\Behat\Context\Context;
 use Behat\Gherkin\Node\PyStringNode;
@@ -14,33 +8,28 @@ use Behat\Gherkin\Node\TableNode;
 use PHPUnit\Framework\Assert;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Webit\Tests\Helper\ContainerDebugger;
+use Webit\Tests\Kernel\Kernel;
+use Webit\Tests\Kernel\KernelAwareTrait;
 
 abstract class BundleConfigurationContext implements Context
 {
-    /**
-     * @var Kernel
-     */
+    use KernelAwareTrait;
+
+    /** @var Kernel */
     protected $kernel;
 
-    /**
-     * @var array
-     */
+    /** @var array */
     protected $services = array();
 
-    /**
-     * @var ContainerDebugger
-     */
+    /** @var ContainerDebugger */
     protected $containerDebugger;
 
     /** @var bool */
     private $isBootstrapped = false;
 
-    /**
-     * @param Kernel $kernel
-     */
-    public function __construct(Kernel $kernel)
+    public function __construct(Kernel $kernel = null)
     {
-        $this->kernel = $kernel;
+        $this->kernel = $kernel ?: $this->createKernel();
         $this->containerDebugger = new ContainerDebugger();
     }
 

@@ -1,12 +1,6 @@
 <?php
-/**
- * File Kernel.php
- * Created at: 2015-05-17 09-22
- *
- * @author Daniel Bojdo <daniel.bojdo@web-it.eu>
- */
 
-namespace Webit\Tests\Behaviour\Bundle;
+namespace Webit\Tests\Kernel;
 
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -15,22 +9,16 @@ use Symfony\Component\Yaml\Yaml;
 
 abstract class Kernel extends BaseKernel
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     private $hash;
 
-    /**
-     * @var ContainerBuilder
-     */
+    /** @var ContainerBuilder */
     private $containerBuilder;
 
-    /**
-     * @var array
-     */
+    /** @var array */
     private $configs = array();
 
-    public function __construct($env = 'test', $debug = true, $kernelHash = null)
+    public function __construct($kernelHash = null, $env = 'test', $debug = true)
     {
         $this->hash = $kernelHash ?: $this->generateHash();
         parent::__construct($env, $debug);
@@ -100,7 +88,7 @@ abstract class Kernel extends BaseKernel
         return $this->containerBuilder;
     }
 
-    public function dumpConfig(): string
+    public function dumpConfig()
     {
         $configsDir = $this->getCacheDir() . '/configs_' . $this->generateHash();
 
@@ -140,8 +128,21 @@ abstract class Kernel extends BaseKernel
         return $params;
     }
 
+    /**
+     * @return string
+     */
+    public function hash()
+    {
+        return $this->hash;
+    }
+
     private function generateHash()
     {
         return substr(md5(mt_rand(0, 10000) . microtime(true) . mt_rand(0, 100000)), -6);
+    }
+
+    public function clear()
+    {
+        exec(sprintf('rm -rf %s', $this->rootDir));
     }
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace Webit\Tests\Unit;
+namespace Webit\Tests\Random;
 
 use PHPUnit\Framework\TestCase;
 
@@ -38,7 +38,7 @@ class RandomValuesTraitTest extends TestCase
      * @test
      * @dataProvider randomStringMinMax
      */
-    public function itGeneratesRandomString(int $minLength = null, int $maxLength = null, callable $assert)
+    public function itGeneratesRandomString($minLength = null, $maxLength = null, $assert)
     {
         call_user_func($assert, $this->randomString($minLength, $maxLength));
     }
@@ -95,7 +95,7 @@ class RandomValuesTraitTest extends TestCase
      * @dataProvider randomIntMinMax
      * @test
      */
-    public function itGeneratesRandomInteger(int $min = null, int $max = null, callable $assert)
+    public function itGeneratesRandomInteger($min = null, $max = null, $assert)
     {
         call_user_func($assert, $this->randomInt($min, $max));
     }
@@ -103,32 +103,32 @@ class RandomValuesTraitTest extends TestCase
     public function randomIntMinMax()
     {
         return [
-            'no min, no max (PHP_INT_MIN >= result <= PHP_INT_MAX)' => [
+            'no min, no max (-PHP_INT_MAX >= result <= PHP_INT_MAX)' => [
                 null,
                 null,
                 function ($result) {
                     $this->assertLessThanOrEqual(mt_getrandmax(), $result);
-                    $this->assertGreaterThanOrEqual(PHP_INT_MIN, $result);
+                    $this->assertGreaterThanOrEqual(-PHP_INT_MAX, $result);
                 }
             ],
             'no max (MIN >= result <= PHP_INT_MAX)' => [
-                $min = PHP_INT_MIN + mt_rand(0, 100000),
+                $min = -PHP_INT_MAX + mt_rand(0, 100000),
                 null,
                 function ($result) use ($min) {
                     $this->assertLessThanOrEqual(mt_getrandmax(), $result);
                     $this->assertGreaterThanOrEqual($min, $result);
                 }
             ],
-            'no min (PHP_INT_MIN >= result <= MAX)' => [
+            'no min (-PHP_INT_MAX >= result <= MAX)' => [
                 null,
                 $max = mt_getrandmax() - mt_rand(0, 100000),
                 function ($result) use ($max) {
                     $this->assertLessThanOrEqual($max, $result);
-                    $this->assertGreaterThanOrEqual(PHP_INT_MIN, $result);
+                    $this->assertGreaterThanOrEqual(-PHP_INT_MAX, $result);
                 }
             ],
             'min and max (MIN >= result <= MAX)' => [
-                $min = PHP_INT_MIN + mt_rand(0, 100000),
+                $min = -PHP_INT_MAX + mt_rand(0, 100000),
                 $max = mt_getrandmax() - mt_rand(0, 100000),
                 function ($result) use ($min, $max) {
                     $this->assertLessThanOrEqual($max, $result);
@@ -136,8 +136,8 @@ class RandomValuesTraitTest extends TestCase
                 }
             ],
             'min greater then max (result == MIN)' => [
-                $min = mt_rand(PHP_INT_MIN + 1000, mt_getrandmax()),
-                mt_rand(PHP_INT_MIN, $min),
+                $min = mt_rand(-PHP_INT_MAX + 1000, mt_getrandmax()),
+                mt_rand(-PHP_INT_MAX, $min),
                 function ($result) use ($min) {
                     $this->assertEquals($result, $min);
                 }
@@ -151,7 +151,7 @@ class RandomValuesTraitTest extends TestCase
      * @test
      * @dataProvider randomPositiveIntMax
      */
-    public function itGeneratesPositiveInteger(int $max = null, callable $assert)
+    public function itGeneratesPositiveInteger($max = null, $assert)
     {
         call_user_func($assert, $this->randomPositiveInt($max));
     }
@@ -187,7 +187,7 @@ class RandomValuesTraitTest extends TestCase
      * @test
      * @dataProvider randomNonNegativeIntMax
      */
-    public function itGeneratesNonNegativeInteger(int $max = null, callable $assert)
+    public function itGeneratesNonNegativeInteger($max = null, $assert)
     {
         call_user_func($assert, $this->randomNonNegativeInt($max));
     }
@@ -224,7 +224,7 @@ class RandomValuesTraitTest extends TestCase
      * @param callable $assert
      * @dataProvider randomFloatMinMaxPrecision
      */
-    public function itGeneratesRandomFloat(float $min = null, float $max = null, callable $assert)
+    public function itGeneratesRandomFloat($min = null, $max = null, $assert)
     {
         call_user_func($assert, $this->randomFloat($min, $max));
     }

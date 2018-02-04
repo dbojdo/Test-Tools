@@ -1,10 +1,15 @@
 <?php
 
-namespace Webit\Tests\Unit;
+namespace Webit\Tests\Random;
 
 trait RandomValuesTrait
 {
-    protected function randomString(int $minLength = null, int $maxLength = null): string
+    /**
+     * @param int|null $minLength
+     * @param int|null $maxLength
+     * @return bool|string
+     */
+    protected function randomString($minLength = null, $maxLength = null)
     {
         $minLength = $minLength === null || $minLength < $this->minStringLength() ? $this->minStringLength() : $minLength;
         $maxLength = $maxLength === null || $maxLength > $this->maxStringLength() ? $this->maxStringLength() : $maxLength;
@@ -19,17 +24,30 @@ trait RandomValuesTrait
         return substr($string, 0, $this->randomInt($minLength, $maxLength));
     }
 
-    protected function randomNonNegativeInt(int $max = null): int
+    /**
+     * @param int|null $max
+     * @return int
+     */
+    protected function randomNonNegativeInt($max = null)
     {
         return $this->randomInt(0, $max < 0 ? 0 : $max);
     }
 
-    protected function randomPositiveInt(int $max = null): int
+    /**
+     * @param int|null $max
+     * @return int
+     */
+    protected function randomPositiveInt($max = null)
     {
         return $this->randomInt(1, $max < 1 ? 1 : $max);
     }
 
-    protected function randomInt(int $min = null, int $max = null): int
+    /**
+     * @param int|null $min
+     * @param int|null $max
+     * @return int
+     */
+    protected function randomInt($min = null, $max = null)
     {
         $min = $min === null ? $this->minInt() : $min;
         $max = $max === null ? $this->maxInt() : $max;
@@ -41,7 +59,7 @@ trait RandomValuesTrait
     /**
      * @return bool
      */
-    protected function randomBool(): bool
+    protected function randomBool()
     {
         return (bool)$this->randomNonNegativeInt(1);
     }
@@ -51,7 +69,7 @@ trait RandomValuesTrait
      * @param float|null $max
      * @return float
      */
-    protected function randomFloat(float $min = null, float $max = null): float
+    protected function randomFloat($min = null, $max = null)
     {
         $min = $min === null || $min < $this->minFloat() ? $this->minFloat() : $min;
         $max = $max === null || $max > $this->maxFloat() ? $this->maxFloat() : $max;
@@ -62,45 +80,32 @@ trait RandomValuesTrait
         return $randFloat;
     }
 
-    private function minFloat(): float
+    private function minFloat()
     {
-        if ($this->isPhp72()) {
-            return PHP_FLOAT_MIN;
-        }
-
         return (float)$this->minInt();
     }
 
-    private function maxFloat(): float
+    private function maxFloat()
     {
-        if ($this->isPhp72()) {
-            return PHP_FLOAT_MAX;
-        }
-
         return (float)$this->maxInt();
     }
 
-    private function minInt(): int
+    private function minInt()
     {
-        return PHP_INT_MIN;
+        return -PHP_INT_MAX;
     }
 
-    private function maxInt(): int
+    private function maxInt()
     {
         return PHP_INT_MAX;
     }
 
-    private function isPhp72(): bool
+    private function minStringLength()
     {
-        return version_compare(phpversion(), '7.2.0') >= 0;
+        return 1;
     }
 
-    private function minStringLength(): int
-    {
-        return 0;
-    }
-
-    private function maxStringLength(): int
+    private function maxStringLength()
     {
         return 256;
     }

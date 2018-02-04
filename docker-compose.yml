@@ -8,9 +8,17 @@ services:
             - ~/.composer:/root/.composer
         working_dir: /var/www/html
 
-    unit-tests:
+    db:
+        image: mysql:5.5
+        environment:
+            MYSQL_ROOT_PASSWORD: root
+            MYSQL_DATABASE: test
+
+    tests:
         extends:
-          service: src
+            service: src
+        links:
+            - db
         command: ./vendor/bin/phpunit
 
     composer:

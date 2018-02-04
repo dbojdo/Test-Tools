@@ -1,16 +1,13 @@
-FROM php:7.0-cli
+FROM php:5.4-cli
 
 RUN apt-get update && apt-get install -y \
        libmcrypt-dev \
        libpq-dev \
        git \
        subversion \
-   && docker-php-ext-install -j$(nproc) iconv mcrypt \
-   && docker-php-ext-install -j$(nproc) zip \
-   && pecl install apcu \
-   && docker-php-ext-enable apcu \
-   && pecl install xdebug \
-   && docker-php-ext-enable xdebug
+   && docker-php-ext-install iconv mcrypt zip
+
+RUN docker-php-ext-install pdo_mysql mysql
 
 RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
     && php composer-setup.php --install-dir=/usr/local/bin --filename=composer \

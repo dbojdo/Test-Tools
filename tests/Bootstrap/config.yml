@@ -1,0 +1,27 @@
+framework:
+    secret: o=9ZCp/66496s;6
+
+doctrine:
+    dbal:
+        connections:
+            default:
+                driver: pdo_mysql
+                host: db
+                user: root
+                password: root
+                dbname: test
+                charset: "UTF8"
+
+    orm:
+        entity_managers:
+            default:
+                connection: default
+                mappings:
+                    # An array of mappings, which may be a bundle name or something else
+                    test:
+                        mapping: true
+                        type: annotation
+                        dir: %kernel.root_dir%/Entity
+                        prefix: "Webit\Tests\Bootstrap\Entity"
+                        is_bundle: false
+

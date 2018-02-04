@@ -69,7 +69,6 @@ class ContainerDebugger
 
                     $this->console->writeln($serviceName, ConsolePrinter::BLUE);
                 }
-
             } catch (\Exception $ex) {
                 $errors[$serviceName] = $ex;
 
