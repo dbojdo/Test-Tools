@@ -160,6 +160,6 @@ class ConfigurableKernel extends BaseKernel
 
     public function clear()
     {
-        exec(sprintf('rm -rf %s', $this->rootDir));
+        exec(sprintf('rm -rf %s', dirname($this->getCacheDir())));
     }
 }
